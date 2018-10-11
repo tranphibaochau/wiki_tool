@@ -42,3 +42,5 @@ api_extractor = api.Extractor(session)
 for rev_id in reverts:
     print("https://en.wikipedia.org/wiki/?diff={0}".format(rev_id))
     print(list(api_extractor.extract(rev_id, features)))
+
+print('test')
