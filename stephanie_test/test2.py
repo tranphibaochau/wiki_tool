@@ -1,8 +1,9 @@
 import nltk
 import mwapi
-from revscoring.features import wikitext,revision_oriented,temporal
+from revscoring.features import wikitext,revision_oriented,temporal,bytes
 from revscoring.languages import english
 from revscoring.extractors import api
+
 session = mwapi.Session("https://en.wikipedia.org", user_agent="Research")
 
 reverts = [820742102, 774370639, 797413078, 801466533, 765152913,
@@ -16,31 +17,24 @@ reverts = [820742102, 774370639, 797413078, 801466533, 765152913,
            802488558, 805418121]
 
 
-features = [
-    # Catches long key mashes like kkkkkkkkkkkk
-    wikitext.revision.diff.longest_repeated_char_added,
-    # Measures the size of the change in added words
-    wikitext.revision.diff.words_added,
-    # Measures the size of the change in removed words
-    wikitext.revision.diff.words_removed,
-    # Measures the proportional change in "badwords"
-    english.badwords.revision.diff.match_prop_delta_sum,
-    # Measures the proportional change in "informals"
-    english.informals.revision.diff.match_prop_delta_sum,
-    # Measures the proportional change meaningful words
-    english.stopwords.revision.diff.non_stopword_prop_delta_sum,
-    # Is the user anonymous
-    revision_oriented.revision.user.is_anon,
-    # Is the user a bot or a sysop
-    revision_oriented.revision.user.in_group({'bot', 'sysop'}),
-    # How long ago did the user register?
-    temporal.revision.user.seconds_since_registration
-]
 
+features = [revision_oriented.revision.user.is_anon]
 
+reverts_num=len(reverts)
+anon = 0
+registered = 0
 api_extractor = api.Extractor(session)
 for rev_id in reverts:
-    print("https://en.wikipedia.org/wiki/?diff={0}".format(rev_id))
-    print(list(api_extractor.extract(rev_id, features)))
+    # print("https://en.wikipedia.org/wiki/?diff={0}".format(rev_id))
+    res = list(api_extractor.extract(rev_id, features))
+    # print(res)
 
-print('test')
+    if res[0]==True:
+        anon+=1
+    else:
+        registered+=1
+
+percent_anon = round((anon/reverts_num),4)*100
+percent_registered = round((registered/reverts_num),4)*100
+print('Percent of reverts from an anonymous editor:',anon,'/',reverts_num,'(%',percent_anon,')')
+print('Percent of reverts from an registered editor:',registered,'/',reverts_num,'(%',percent_registered,')')
