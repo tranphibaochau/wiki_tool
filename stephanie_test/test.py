@@ -1,3 +1,7 @@
+# Use this to determine if a revsion has been reverted or not.
+# If a revsion has been reverted, the rev_id is added to list reverts
+# prints reverts at end
+
 import csv
 import sys, traceback
 import mwreverts.api
@@ -24,4 +28,6 @@ reverts = []
 for revid in rev_ids[:400]:
     reverting, reverted, reverted_to = mwreverts.api.check(session, revid)
     if reverted != None:
-       reverts.append(revid)
+        # print(revid,'\n', reverted)
+        reverts.append(revid)
+print(reverts)
