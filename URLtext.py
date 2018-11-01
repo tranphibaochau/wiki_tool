@@ -8,7 +8,7 @@ def urlRequest(IP, timeS): #Requests HTML page
     return index
 
 data = []
-with open(sys.argv[1]) as file: #Opens data file
+with open(sys.argv[1], encoding = 'utf8') as file: #Opens data file
     data_csv_reader = csv.reader(file, delimiter='\t')
     next(data_csv_reader) #Skips headers line
     for rows in data_csv_reader:
@@ -16,14 +16,15 @@ with open(sys.argv[1]) as file: #Opens data file
         for cell in rows:
             row.append(cell)
         if rows != []:
+            row.pop(0)
             data.append(row)
 
 with open(sys.argv[2], 'w') as file:
     writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    headers = ['revid', 'editor', 'datetime', 'reverting', 'reverted', 'match']
+    headers = ['revid', 'editor', 'datetime', 'title', 'match']
     writer.writerow(headers)
     for i in range(len(data)):
-        date = data[i][2].split(' ') #Gets just YYYY-MM-DD from Datetime
+        date = data[i][2].split('T') #Gets just YYYY-MM-DD from Datetime
         urlIndex = urlRequest(str(data[i][1]), str(date[0]))
         if 'Result is positive' in urlIndex:
             result = 'TRUE'
@@ -33,5 +34,7 @@ with open(sys.argv[2], 'w') as file:
             result = 'Inconclusive'
         currentRow = data[i]
         currentRow.append(result)
-        writer.writerow(currentRow)
-        #print(currentRow)
+        if result == 'TRUE':
+            writer.writerow(currentRow)
+            #print('True')
+        print(currentRow)
