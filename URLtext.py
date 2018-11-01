@@ -1,5 +1,6 @@
 import requests
 import csv
+import sys
 
 def urlRequest(IP, timeS): #Requests HTML page
     response = requests.get("http://metrics.torproject.org/exonerator.html?ip={IP}&timestamp={timeS}&lang=en".format(IP = IP, timeS = timeS))
@@ -7,7 +8,7 @@ def urlRequest(IP, timeS): #Requests HTML page
     return index
 
 data = []
-with open('tor_wikipedia_edits_20180522.tsv') as file: #Opens data file
+with open(sys.argv[1]) as file: #Opens data file
     data_csv_reader = csv.reader(file, delimiter='\t')
     next(data_csv_reader) #Skips headers line
     for rows in data_csv_reader:
@@ -17,12 +18,12 @@ with open('tor_wikipedia_edits_20180522.tsv') as file: #Opens data file
         if rows != []:
             data.append(row)
 
-with open('TorHTMLResults.csv', 'w') as file:
+with open(sys.argv[2], 'w') as file:
     writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     headers = ['revid', 'editor', 'datetime', 'reverting', 'reverted', 'match']
     writer.writerow(headers)
     for i in range(len(data)):
-        date = data[i][2].split(' ')
+        date = data[i][2].split(' ') #Gets just YYYY-MM-DD from Datetime
         urlIndex = urlRequest(str(data[i][1]), str(date[0]))
         if 'Result is positive' in urlIndex:
             result = 'TRUE'
@@ -33,9 +34,4 @@ with open('TorHTMLResults.csv', 'w') as file:
         currentRow = data[i]
         currentRow.append(result)
         writer.writerow(currentRow)
-        print(currentRow)
-"""        
-rows[2] = rows[2].split(' ') #Gets YYYY-MM-DD from date and time
-row.append(rows[1])
-row.append(rows[2][0])
-"""
+        #print(currentRow)
