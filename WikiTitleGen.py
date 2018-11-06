@@ -32,4 +32,4 @@ for i in range(len(data)):
     print(TitleList)
 TitleList = pd.Series(TitleList)
 Titles = pd.DataFrame(TitleList, columns = ['Titles'])
-Titles.to_csv('WikiPageTitles.csv')
+Titles.to_csv('WikiPageTitles.csv', index = False)
