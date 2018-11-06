@@ -31,7 +31,5 @@ for i in range(len(data)):
 
 
 Titles = pd.DataFrame({'Titles': TitleList})
-print(Titles)
 Titles.sort_values(by=['Titles'])
-print(Titles)
 Titles.to_csv('WikiPageTitles.csv', index = False)
