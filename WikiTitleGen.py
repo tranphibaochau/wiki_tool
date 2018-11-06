@@ -10,7 +10,7 @@ with open('tor_wikipedia_edits_20181026.tsv') as csv_file:
     next(data_csv_reader)
     for row in data_csv_reader:
         if row != []:
-            removeList = ['User', 'user:', 'Talk:', 'talk:', 'User talk:', 'User Talk:', 'user Talk:', 'user talk:']
+            removeList = ['User', 'user:', 'Talk:', 'talk:', 'User talk:', 'User Talk:', 'user Talk:', 'user talk:', 'Template:', 'template:', 'Category:', 'category:', ]
             for word in removeList:
                 if word in row[3]:
                     appendflag = False
@@ -28,8 +28,10 @@ for i in range(len(data)):
         TitleList.append(data[i])
     else:
         continue
-    print(data[i])
-    print(TitleList)
-TitleList = pd.Series(TitleList)
-Titles = pd.DataFrame(TitleList, columns = ['Titles'])
+
+
+Titles = pd.DataFrame({'Titles': TitleList})
+print(Titles)
+Titles.sort_values(by=['Titles'])
+print(Titles)
 Titles.to_csv('WikiPageTitles.csv', index = False)
